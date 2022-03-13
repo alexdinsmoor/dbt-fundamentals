@@ -1,0 +1,32 @@
+version: 2
+
+models:
+    - name: stg_customers
+      description: staged customer information, including lifetime order metrics
+      columns:
+        - name: customer_id
+          description: Primary key for customers 
+          tests:
+            - not_null
+    - name: stg_orders   
+      columns:
+        - name: order_id
+          tests:
+            - not_null
+        - name: customer_id
+          tests:
+            - relationships:
+                to: ref('stg_customers')
+                field: customer_id
+        - name: status
+          description: "{{ doc('order_status') }}"
+          test:
+            name: status
+          tests:
+            - accepted_values:
+                values:
+                    - completed
+                    - shipped
+                    - returned
+                    - return_pending
+                    - placed
